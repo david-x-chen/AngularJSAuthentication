@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using NavigatorGlass.Owin.Security.Provider;
+using AngularJSAuthentication.Glass.Provider;
 
 namespace AngularJSAuthentication.Glass
 {

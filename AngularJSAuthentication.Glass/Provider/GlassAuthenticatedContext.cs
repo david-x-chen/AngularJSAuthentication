@@ -7,7 +7,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Provider;
 using Newtonsoft.Json.Linq;
 
-namespace NavigatorGlass.Owin.Security.Provider
+namespace AngularJSAuthentication.Glass.Provider
 {
   
     public class GlassAuthenticatedContext : BaseContext

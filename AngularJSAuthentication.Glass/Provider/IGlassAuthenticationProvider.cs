@@ -2,7 +2,7 @@
 
 using System.Threading.Tasks;
 
-namespace NavigatorGlass.Owin.Security.Provider
+namespace AngularJSAuthentication.Glass.Provider
 {
     public interface IGlassAuthenticationProvider
     {

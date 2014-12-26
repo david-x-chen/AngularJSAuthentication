@@ -10,7 +10,7 @@ using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
-using NavigatorGlass.Owin.Security.Provider;
+using AngularJSAuthentication.Glass.Provider;
 using Newtonsoft.Json.Linq;
 
 namespace AngularJSAuthentication.Glass

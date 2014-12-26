@@ -10,8 +10,8 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Infrastructure;
-using NavigatorGlass.Owin.Security;
-using NavigatorGlass.Owin.Security.Provider;
+using AngularJSAuthentication.Glass;
+using AngularJSAuthentication.Glass.Provider;
 using Owin;
 
 namespace AngularJSAuthentication.Glass

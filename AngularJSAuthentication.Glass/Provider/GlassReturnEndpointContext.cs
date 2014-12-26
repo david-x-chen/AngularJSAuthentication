@@ -4,7 +4,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Provider;
 
-namespace NavigatorGlass.Owin.Security.Provider
+namespace AngularJSAuthentication.Glass.Provider
 {
     public class GlassReturnEndpointContext : ReturnEndpointContext
     {
