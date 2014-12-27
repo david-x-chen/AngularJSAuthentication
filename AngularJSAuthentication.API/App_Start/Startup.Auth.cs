@@ -63,8 +63,8 @@ namespace AngularJSAuthentication.API
             //var config = DependencyResolver.Current.GetService<IConfigurationOptions>();
             app.UseGlassAuthentication(new GlassAuthenticationOptions
             {
-                ClientId = "80118585672-gtimm6k2goemo48ipai8ijjudb8cm3eo.apps.googleusercontent.com", //clientId, //config.ClientId,
-                ClientSecret = "i5UU_Y9cYbtPU5deDvMlc_dp", //clientSecret, //config.ClientSecret,
+                ClientId = clientId, //config.ClientId,
+                ClientSecret = clientSecret, //config.ClientSecret,
                 Provider = glassProvider,
                 //CallbackPath = new PathString("/authcomplete.html"),
                 Scope = new List<string>
