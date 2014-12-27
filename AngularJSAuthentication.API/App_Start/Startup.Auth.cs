@@ -27,22 +27,21 @@ namespace AngularJSAuthentication.API
             {
                 OnAuthenticated = context =>
                 {
-                    context.Identity.AddClaim(new Claim("ExternalAccessToken", context.AccessToken));
-
                     var accessToken = context.AccessToken;
-                    var refreshToken = context.RefreshToken;
-                    var expiresIn = context.ExpiresIn;
-                    var tokenType = context.TokenType;
-                    var issued = context.Issued;
-
                     var userId = context.Id;
 
                     var container = UnityConfig.GetConfiguredContainer();
                     var resolver = new UnityResolver(container);
                     var credentialService = resolver.GetService<GlassCredentialRepository>();
                     var credential = credentialService.FindCredential(userId);
+
                     if (credential.Result == null)
                     {
+                        var refreshToken = context.RefreshToken;
+                        var expiresIn = context.ExpiresIn;
+                        var tokenType = context.TokenType;
+                        var issued = context.Issued;
+
                         var glassCredential = new GlassCredential()
                         {
                             UserId = userId,
@@ -56,6 +55,14 @@ namespace AngularJSAuthentication.API
 
                         credentialService.SaveCredential(glassCredential);
                     }
+                    else
+                    {
+                        var c = credential.Result;
+                        accessToken = c.AccessToken;
+                    }
+
+                    context.Identity.AddClaim(new Claim("ExternalAccessToken", accessToken));
+
                     return Task.FromResult<object>(null);
                 }
             };
