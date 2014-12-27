@@ -38,7 +38,7 @@ namespace AngularJSAuthentication.Data.Repository
         {
             ThrowIfDisposed();
 
-            var query = Query.EQ("UserId", userid);
+            var query = Query.EQ("userId", userid);
 
             var result = collection.FindOneAs<GlassCredential>(query);
             return Task.FromResult(result);
