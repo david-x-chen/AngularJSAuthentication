@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace AngularJSAuthentication.API.Models
 {
@@ -31,6 +28,14 @@ namespace AngularJSAuthentication.API.Models
     public class ParsedExternalAccessToken
     {
         public string user_id { get; set; }
+
+        public string user_name { get; set; }
+
         public string app_id { get; set; }
+
+        public string email { get; set; }
+
+        public List<string> claims { get; set; }
+
     }
 }
