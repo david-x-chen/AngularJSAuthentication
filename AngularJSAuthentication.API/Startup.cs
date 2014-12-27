@@ -15,7 +15,7 @@ using System.Web.Http;
 
 namespace AngularJSAuthentication.API
 {
-    public class Startup
+    public partial class Startup
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -39,6 +39,7 @@ namespace AngularJSAuthentication.API
             config.DependencyResolver = new UnityResolver(container);
 
             ConfigureOAuth(app);
+            ConfigGlassAuth(app);
 
             WebApiConfig.Register(config);
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);

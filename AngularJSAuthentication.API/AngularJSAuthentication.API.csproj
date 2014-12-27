@@ -157,6 +157,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -204,6 +205,10 @@
     <ProjectReference Include="..\AngularJSAuthentication.Data\AngularJSAuthentication.Data.csproj">
       <Project>{9d912007-3c1b-4ea6-9b34-6fadd48b5ba2}</Project>
       <Name>AngularJSAuthentication.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AngularJSAuthentication.Glass\AngularJSAuthentication.Glass.csproj">
+      <Project>{94c8ac83-18e6-4d0e-9ee4-fa12580e4083}</Project>
+      <Name>AngularJSAuthentication.Glass</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

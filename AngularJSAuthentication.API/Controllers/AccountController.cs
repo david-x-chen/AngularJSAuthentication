@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using AngularJSAuthentication.Data.Interface;
 
 namespace AngularJSAuthentication.API.Controllers
 {
@@ -41,21 +42,21 @@ namespace AngularJSAuthentication.API.Controllers
         [Route("Register")]
         public async Task<IHttpActionResult> Register(UserModel userModel)
         {
-             if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-             IdentityResult result = await authRepository.RegisterUser(userModel);
+            IdentityResult result = await authRepository.RegisterUser(userModel);
 
-             IHttpActionResult errorResult = GetErrorResult(result);
+            IHttpActionResult errorResult = GetErrorResult(result);
 
-             if (errorResult != null)
-             {
-                 return errorResult;
-             }
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
 
-             return Ok();
+            return Ok();
         }
 
         // GET api/Account/ExternalLogin
@@ -69,7 +70,7 @@ namespace AngularJSAuthentication.API.Controllers
 
             if (error != null)
                 return BadRequest(Uri.EscapeDataString(error));
-       
+
             if (!User.Identity.IsAuthenticated)
                 return new ChallengeResult(provider, this);
 
@@ -82,7 +83,7 @@ namespace AngularJSAuthentication.API.Controllers
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
             if (externalLogin == null)
                 return InternalServerError();
-  
+
             if (externalLogin.LoginProvider != provider)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
@@ -92,6 +93,28 @@ namespace AngularJSAuthentication.API.Controllers
             var user = await mongoAuthRepository.FindAsync(new UserLoginInfo(externalLogin.LoginProvider, externalLogin.ProviderKey));
 
             bool hasRegistered = user != null;
+
+            // Added by David
+            if (!hasRegistered && provider == "Glass")
+            {
+                var externalModel = new RegisterExternalBindingModel
+                {
+                    UserName = externalLogin.UserName,
+                    Provider = externalLogin.LoginProvider,
+                    ExternalAccessToken = externalLogin.ExternalAccessToken
+                };
+
+                var registerResult = await RegisterExternal(externalModel);
+                var response = await registerResult.ExecuteAsync(new System.Threading.CancellationToken());
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    dynamic jObj = (JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(content);
+                    var accessToken = jObj["access_token"];
+
+                    hasRegistered = accessToken != null;
+                }
+            }
 
             redirectUri = string.Format("{0}#external_access_token={1}&provider={2}&haslocalaccount={3}&external_user_name={4}",
                                             redirectUri,
@@ -110,11 +133,11 @@ namespace AngularJSAuthentication.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             var verifiedAccessToken = await VerifyExternalAccessToken(model.Provider, model.ExternalAccessToken);
             if (verifiedAccessToken == null)
                 return BadRequest("Invalid Provider or External Access Token");
-            
+
             var user = await mongoAuthRepository.FindAsync(new UserLoginInfo(model.Provider, verifiedAccessToken.user_id));
 
             bool hasRegistered = user != null;
@@ -124,18 +147,18 @@ namespace AngularJSAuthentication.API.Controllers
 
             user = new User()
             {
-                UserName = verifiedAccessToken.user_name, 
-                UserId = verifiedAccessToken.user_id, 
+                UserName = verifiedAccessToken.user_name,
+                UserId = verifiedAccessToken.user_id,
                 Email = verifiedAccessToken.email,
                 Claims = verifiedAccessToken.claims,
-                Logins = new List<UserLoginInfo> {new UserLoginInfo(model.Provider, verifiedAccessToken.user_id)}, 
+                Logins = new List<UserLoginInfo> { new UserLoginInfo(model.Provider, verifiedAccessToken.user_id) },
             };
 
             var result = await mongoAuthRepository.CreateAsync(user);
-            
+
             if (!result.Succeeded)
                 return GetErrorResult(result);
-            
+
             //generate access token response
             var accessTokenResponse = GenerateLocalAccessTokenResponse(model.UserName);
 
@@ -149,14 +172,15 @@ namespace AngularJSAuthentication.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(externalAccessToken))
                 return BadRequest("Provider or external access token is not sent");
-      
+
             var verifiedAccessToken = await VerifyExternalAccessToken(provider, externalAccessToken);
             if (verifiedAccessToken == null)
             {
                 return BadRequest("Invalid Provider or External Access Token");
             }
 
-            var user = authRepository.FindAsync(new UserLoginInfo(provider, verifiedAccessToken.user_id)).Result;
+            //var user = await authRepository.FindAsync(new UserLoginInfo(provider, verifiedAccessToken.user_id));
+            var user = await mongoAuthRepository.FindAsync(new UserLoginInfo(provider, verifiedAccessToken.user_id));
 
             bool hasRegistered = user != null;
 
@@ -231,14 +255,14 @@ namespace AngularJSAuthentication.API.Controllers
 
             if (string.IsNullOrWhiteSpace(clientId))
                 return "client_Id is required";
-    
+
 
             //var client = authRepository.FindClient(clientId);
             var client = mongoAuthRepository.FindClient(clientId);
 
             if (client == null)
                 return string.Format("Client_id '{0}' is not registered in the system.", clientId);
-        
+
 
             if (client.AllowedOrigin != "*")
             {
@@ -269,11 +293,11 @@ namespace AngularJSAuthentication.API.Controllers
 
             var verifyTokenEndPoint = "";
 
-            if (provider == "Google")
+            if (provider == "Google" || provider == "Glass")
                 verifyTokenEndPoint = string.Format("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={0}", accessToken);
             else
                 return null;
-       
+
             var client = new HttpClient();
             var uri = new Uri(verifyTokenEndPoint);
             var response = await client.GetAsync(uri);
@@ -286,15 +310,15 @@ namespace AngularJSAuthentication.API.Controllers
 
                 parsedToken = new ParsedExternalAccessToken();
 
-                if (provider == "Google")
+                if (provider == "Google" || provider == "Glass")
                 {
                     parsedToken.user_name = jObj["email"];
                     parsedToken.user_id = jObj["user_id"];
                     parsedToken.email = jObj["email"];
                     parsedToken.app_id = jObj["audience"];
-                    parsedToken.claims = jObj["scope"] != null ? (((string) jObj["scope"]).Split(' ')).ToList() : null;
+                    parsedToken.claims = jObj["scope"] != null ? (((string)jObj["scope"]).Split(' ')).ToList() : null;
 
-                    if (!string.Equals(Startup.googleAuthOptions.ClientId, parsedToken.app_id, StringComparison.OrdinalIgnoreCase))
+                    if (provider != "Glass" && !string.Equals(Startup.googleAuthOptions.ClientId, parsedToken.app_id, StringComparison.OrdinalIgnoreCase))
                         return null;
                 }
 
@@ -327,7 +351,7 @@ namespace AngularJSAuthentication.API.Controllers
                                         new JProperty("expires_in", tokenExpiration.TotalSeconds.ToString()),
                                         new JProperty(".issued", ticket.Properties.IssuedUtc.ToString()),
                                         new JProperty(".expires", ticket.Properties.ExpiresUtc.ToString())
-        );
+            );
 
             return tokenResponse;
         }

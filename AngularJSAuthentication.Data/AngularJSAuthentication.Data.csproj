@@ -53,6 +53,7 @@
     <Compile Include="Attributes\CollectionName .cs" />
     <Compile Include="Attributes\Opertation.cs" />
     <Compile Include="Entities\Client.cs" />
+    <Compile Include="Entities\GlassCredential.cs" />
     <Compile Include="Entities\RefreshToken.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Helpers\Util.cs" />
@@ -61,12 +62,14 @@
     <Compile Include="Infrastructure\IMongoRepository.cs" />
     <Compile Include="Infrastructure\MongoRepository.cs" />
     <Compile Include="Interface\IAuthRepository.cs" />
+    <Compile Include="Interface\IGlassCredentialRepository.cs" />
     <Compile Include="Interface\IClientRepository.cs" />
     <Compile Include="Interface\IRefreshTokenRepository.cs" />
     <Compile Include="Interface\IUserRepository.cs" />
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Repository\GlassCredentialRepository.cs" />
     <Compile Include="Repository\ClientRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\IMongoAuthRepository.cs" />

@@ -42,6 +42,8 @@ namespace AngularJSAuthentication.API.App_Start
             container.RegisterType<IAuthRepository, AuthRepository>();
             container.RegisterType<IMongoAuthRepository, MongoAuthRepository>();
 
+            container.RegisterType<IGlassCredentialRepository, GlassCredentialRepository>(new InjectionConstructor(connectionString));
+
             container.RegisterType<OAuthAuthorizationServerProvider, SimpleAuthorizationServerProvider>();
             container.RegisterType<IAuthenticationTokenProvider, SimpleRefreshTokenProvider>();
 
