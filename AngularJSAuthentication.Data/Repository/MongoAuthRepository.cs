@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using AngularJSAuthentication.API.Data;
 using AngularJSAuthentication.Data.Entities;
 using AngularJSAuthentication.Data.Interface;
 using AngularJSAuthentication.Data.Models;
 using Microsoft.AspNet.Identity;
-using MongoDB.Bson;
 
 namespace AngularJSAuthentication.Data.Repository
 {
-    public class MongoAuthRepository : IAuthRepository
+    public class MongoAuthRepository : IMongoAuthRepository
     {
         private readonly IClientRepository clientRepository;
 
@@ -19,13 +16,16 @@ namespace AngularJSAuthentication.Data.Repository
 
         private readonly IUserRepository<User> userRepository;
 
+        private readonly IUserLoginStore<User> userLoginStore;  
+
         public bool _disposed;
 
-        public MongoAuthRepository(IClientRepository clientRepository, IRefreshTokenRepository refreshTokenRepository, IUserRepository<User> userRepository)
+        public MongoAuthRepository(IClientRepository clientRepository, IRefreshTokenRepository refreshTokenRepository, IUserRepository<User> userRepository, IUserLoginStore<User> userLoginStore)
         {
             this.clientRepository = clientRepository;
             this.refreshTokenRepository = refreshTokenRepository;
             this.userRepository = userRepository;
+            this.userLoginStore = userLoginStore;
 
         }
 
@@ -49,6 +49,69 @@ namespace AngularJSAuthentication.Data.Repository
             return client;
         }
 
+
+
+
+
+
+        public Task<User> FindAsync(UserLoginInfo loginInfo)
+        {
+            ThrowIfDisposed();
+            if (loginInfo == null)
+                throw new ArgumentNullException("loginInfo");
+
+            var user = userLoginStore.FindAsync(loginInfo);
+            return user;
+        }
+
+
+        public Task<IdentityResult> CreateAsync(User user)
+        {
+            ThrowIfDisposed();
+            if (user == null)
+                throw new ArgumentNullException("user");
+
+            try
+            {
+                var result = userLoginStore.CreateAsync(user);
+            }
+            catch (Exception ex)
+            {
+                
+                throw ex;
+            }
+
+            return Task.FromResult(IdentityResult.Success);
+        }
+
+
+        public Task<IdentityResult> AddLoginAsync(string userId, UserLoginInfo login)
+        {
+            try
+            {
+                var user = userLoginStore.FindByIdAsync(userId).Result;
+                var result = userLoginStore.AddLoginAsync(user, login);
+            }
+            catch (Exception ex)
+            {
+                
+                throw;
+            }
+
+            return Task.FromResult(IdentityResult.Success);
+        }
+
+
+
+
+
+
+
+        public Task<RefreshToken> FindRefreshToken(string refreshTokenId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> AddRefreshToken(RefreshToken token)
         {
             ThrowIfDisposed();
@@ -59,59 +122,21 @@ namespace AngularJSAuthentication.Data.Repository
             return refreshToken;
         }
 
-
-        public Task<bool> RemoveRefreshToken(string refreshTokenId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IUser> FindAsync(UserLoginInfo loginInfo)
-        {
-            throw new NotImplementedException();
-            
-            //ThrowIfDisposed();
-            //if (loginInfo == null)
-            //    throw new ArgumentNullException("loginInfo");
-
-            //Debug.Write(loginInfo.ToJson());
-
-
-            //var user =  userRepository.FindAsync(loginInfo);
-            //return user;
-
-
-            // return Task.FromResult(user);
-        }
-
-
-
-
-
-
-
-
-
-
-
-        public Task<IdentityResult> CreateAsync(IUser user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IdentityResult> AddLoginAsync(string userId, UserLoginInfo login)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RefreshToken> FindRefreshToken(string refreshTokenId)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<RefreshToken> GetAllRefreshTokens()
         {
-            throw new NotImplementedException();
+            return refreshTokenRepository.GetAllRefreshTokens();
         }
+
+        public Task<bool> RemoveRefreshToken(string tokenId)
+        {
+            ThrowIfDisposed();
+            if (tokenId == null)
+                throw new ArgumentNullException("tokenId");
+
+            var result = refreshTokenRepository.RemoveRefreshToken(tokenId);
+            return result;
+        }
+
 
         private void ThrowIfDisposed()
         {
@@ -123,7 +148,6 @@ namespace AngularJSAuthentication.Data.Repository
         {
             _disposed = true;
         }
-
 
     }
 }

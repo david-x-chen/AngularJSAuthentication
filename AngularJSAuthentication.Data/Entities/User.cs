@@ -28,18 +28,20 @@ namespace AngularJSAuthentication.Data.Entities
         
         [BsonElement("securityStamp")]
 		public virtual string SecurityStamp { get; set; }
-        
+
+        [BsonElement("email")]
+        public virtual string Email { get; set; }
 
         [BsonElement("roles")]
 		public virtual List<string> Roles { get; private set; }
         
 
         [BsonElement("claims")]
-		public virtual List<string> Claims { get; private set; }
+		public virtual List<string> Claims { get; set; }
        
 
         [BsonElement("logins")]
-        public virtual List<UserLoginInfo> Logins { get; private set; }
+        public virtual List<UserLoginInfo> Logins { get; set; }
 
 
 

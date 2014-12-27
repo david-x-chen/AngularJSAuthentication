@@ -21,7 +21,7 @@ namespace AngularJSAuthentication.Data.Test.Repository
             string connectionString = ConfigurationManager.ConnectionStrings["MongoServerSettings"].ConnectionString;
 
             container.RegisterType<IClientRepository, ClientRepository>(new InjectionConstructor(connectionString));
-            container.RegisterType<IAuthRepository, MongoAuthRepository>();
+            container.RegisterType<IMongoAuthRepository, MongoAuthRepository>();
 
             Ioc.Container.Resolve<IClientRepository>();
             authRepository = Ioc.Container.Resolve<IAuthRepository>();

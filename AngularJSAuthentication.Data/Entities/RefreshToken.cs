@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using AngularJSAuthentication.Data.Attributes;
 using AngularJSAuthentication.Data.Infrastructure;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace AngularJSAuthentication.Data.Entities
 {
@@ -9,6 +11,8 @@ namespace AngularJSAuthentication.Data.Entities
     public class RefreshToken : IEntity<string>
     {
         [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
        
         [Required]

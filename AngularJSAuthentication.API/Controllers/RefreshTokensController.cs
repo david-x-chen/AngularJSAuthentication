@@ -1,15 +1,16 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using AngularJSAuthentication.API.Data;
+using AngularJSAuthentication.Data.Repository;
 
 namespace AngularJSAuthentication.API.Controllers
 {
     [RoutePrefix("api/RefreshTokens")]
     public class RefreshTokensController : ApiController
     {
-        private IAuthRepository authRepository;
+        private IMongoAuthRepository authRepository;
 
-        public RefreshTokensController(IAuthRepository authRepository)
+        public RefreshTokensController(IMongoAuthRepository authRepository)
         {
             this.authRepository = authRepository;            
         }
@@ -20,6 +21,23 @@ namespace AngularJSAuthentication.API.Controllers
         {
             return Ok(authRepository.GetAllRefreshTokens());
         }
+
+        //[Authorize(Users="Admin")]
+        [Route("")]
+        public IHttpActionResult Get(string tokenId)
+        {
+            return Ok(authRepository.FindRefreshToken(tokenId));
+        }
+
+
+
+
+
+
+
+
+
+
 
         //[Authorize(Users = "Admin")]
         [AllowAnonymous]
