@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AngularJSAuthentication.Data.Entities;
 using AngularJSAuthentication.Data.Models;
@@ -13,9 +14,7 @@ namespace AngularJSAuthentication.Data.Repository
 
         Client FindClient(string clientId);
 
-        Task<bool> AddRefreshToken(RefreshToken token);
 
-        Task<bool> RemoveRefreshToken(string refreshTokenId);
 
         Task<User> FindAsync(UserLoginInfo loginInfo);
 
@@ -23,5 +22,15 @@ namespace AngularJSAuthentication.Data.Repository
 
         Task<IdentityResult> AddLoginAsync(string userId, UserLoginInfo login);
 
+
+        Task<RefreshToken> FindRefreshToken(string tokenId);
+
+        List<RefreshToken> GetAllRefreshTokens();
+
+        Task<bool> AddRefreshToken(RefreshToken token);
+
+        Task<bool> RemoveRefreshToken(string tokenId);
+
+        void Dispose();
     }
 }

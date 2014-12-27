@@ -49,21 +49,10 @@ namespace AngularJSAuthentication.Data.Repository
             return client;
         }
 
-        public Task<bool> AddRefreshToken(RefreshToken token)
-        {
-            ThrowIfDisposed();
-            if (token == null)
-                throw new ArgumentNullException("token");
-
-            var refreshToken = refreshTokenRepository.AddRefreshToken(token);
-            return refreshToken;
-        }
 
 
-        public Task<bool> RemoveRefreshToken(string refreshTokenId)
-        {
-            throw new NotImplementedException();
-        }
+
+
 
         public Task<User> FindAsync(UserLoginInfo loginInfo)
         {
@@ -123,10 +112,31 @@ namespace AngularJSAuthentication.Data.Repository
             throw new NotImplementedException();
         }
 
+        public Task<bool> AddRefreshToken(RefreshToken token)
+        {
+            ThrowIfDisposed();
+            if (token == null)
+                throw new ArgumentNullException("token");
+
+            var refreshToken = refreshTokenRepository.AddRefreshToken(token);
+            return refreshToken;
+        }
+
         public List<RefreshToken> GetAllRefreshTokens()
         {
-            throw new NotImplementedException();
+            return refreshTokenRepository.GetAllRefreshTokens();
         }
+
+        public Task<bool> RemoveRefreshToken(string tokenId)
+        {
+            ThrowIfDisposed();
+            if (tokenId == null)
+                throw new ArgumentNullException("tokenId");
+
+            var result = refreshTokenRepository.RemoveRefreshToken(tokenId);
+            return result;
+        }
+
 
         private void ThrowIfDisposed()
         {
@@ -138,10 +148,6 @@ namespace AngularJSAuthentication.Data.Repository
         {
             _disposed = true;
         }
-
-
-
-
 
     }
 }
