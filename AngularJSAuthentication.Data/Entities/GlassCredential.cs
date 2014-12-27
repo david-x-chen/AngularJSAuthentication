@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace AngularJSAuthentication.Data.Entities
 {
@@ -14,6 +15,8 @@ namespace AngularJSAuthentication.Data.Entities
     public class GlassCredential : IEntity<string>
     {
         [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string UserId { get; set; }
         public string AccessToken { get; set; }
