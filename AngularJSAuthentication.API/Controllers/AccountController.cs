@@ -6,8 +6,6 @@ using AngularJSAuthentication.Data.Entities;
 using AngularJSAuthentication.Data.Models;
 using AngularJSAuthentication.Data.Repository;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Linq;
@@ -91,8 +89,6 @@ namespace AngularJSAuthentication.API.Controllers
                 return new ChallengeResult(provider, this);
             }
 
-
-            //var user = await authRepository.FindAsync(new UserLoginInfo(externalLogin.LoginProvider, externalLogin.ProviderKey));
             var user = await mongoAuthRepository.FindAsync(new UserLoginInfo(externalLogin.LoginProvider, externalLogin.ProviderKey));
 
             bool hasRegistered = user != null;
@@ -105,7 +101,6 @@ namespace AngularJSAuthentication.API.Controllers
                                             externalLogin.UserName);
 
             return Redirect(redirectUri);
-
         }
 
         // POST api/Account/RegisterExternal
